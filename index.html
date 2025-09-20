@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExploreMate Travel Companion</title>
+    <!-- Google Fonts: Open Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* --- 1. Root Variables & General Styling --- */
+        :root {
+            --primary-color: #0d47a1; /* Deep Ocean Blue */
+            --secondary-color: #1976d2; /* Clear Sky Blue */
+            --accent-color: #ff8f00; /* Sunset Orange */
+            --text-color: #212121;
+            --bg-color: #f5f5f5;
+            --white: #ffffff;
+            --border-color: #e0e0e0;
+            --error-color: #d32f2f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+            padding-top: 60px; /* Offset for fixed navbar */
+        }
+
+        /* --- 2. Navigation Bar --- */
+        .navbar {
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1001;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+            height: 60px;
+        }
+        .nav-logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .dropdown {
+            position: relative;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: var(--white);
+            min-width: 220px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 8px;
+            padding: 0.5rem 0;
+            margin-top: 10px; 
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-weight: 400;
+        }
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+            color: var(--primary-color);
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+
+        /* --- 3. Page Section Management --- */
+        .page-section {
+            display: none;
+            min-height: calc(100vh - 60px);
+            animation: fadeIn 1s ease-in-out;
+        }
+        .page-section.active {
+            display: block;
+        }
+        #hero.active, #planner.active, .feature-page.active {
+            display: flex;
+        }
+
+        /* --- 4. Hero (Landing Page) Section --- */
+        #hero {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+            background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('https://images.unsplash.com/photo-1527631746610-bca00a040d60?q=80&w=2070') no-repeat center center/cover;
+            padding: 2rem;
+        }
+
+        #hero h1, .feature-page-content h1 {
+            font-size: clamp(2.8rem, 6vw, 4.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+        }
+
+        .travel-quote {
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            font-style: italic;
+            font-weight: 300;
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+            min-height: 50px;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .cta-button {
+            background-color: var(--accent-color);
+            color: var(--white);
+            padding: 16px 32px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .cta-button:disabled {
+            background-color: #9e9e9e;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .cta-button:hover:not(:disabled) {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        /* --- 5. Planner Section --- */
+        #planner {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), url('https://images.unsplash.com/photo-1526778548025-1dbd336915db?q=80&w=2070') no-repeat center center/cover;
+        }
+
+        .planner-container {
+            max-width: 700px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        #planner h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-row .form-group { flex: 1; margin-bottom: 0; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #555; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 14px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.2);
+        }
+
+        #generate-btn {
+            width: 100%; background: linear-gradient(45deg, var(--secondary-color), var(--primary-color)); color: var(--white);
+        }
+        
+        /* --- 6. Itinerary & Map Section --- */
+        #results {
+            padding: 2rem;
+            background: linear-gradient(rgba(245, 245, 245, 0.9), rgba(245, 245, 245, 0.9)), url('https://images.unsplash.com/photo-1539635278303-d4002c07eae3?q=80&w=2070') no-repeat center center/cover;
+        }
+        #results-container { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+
+        @media (min-width: 992px) {
+            #results-container {
+                grid-template-columns: 450px 1fr; max-height: calc(100vh - 60px - 4rem);
+            }
+            #itinerary-content { overflow-y: auto; padding-right: 1rem; }
+        }
+        
+        #itinerary-content h2 { text-align: center; margin-bottom: 1.5rem; color: var(--primary-color); }
+        .day-plan { background: var(--white); margin-bottom: 1.5rem; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.07); }
+        .day-plan h3 { color: var(--secondary-color); border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem; font-weight: 600; }
+        .activity { display: flex; align-items: flex-start; margin-top: 1rem; }
+        .activity-icon { margin-right: 1rem; color: var(--accent-color); font-size: 1.2rem; }
+        .map-container { position: sticky; top: calc(60px + 2rem); height: 450px; }
+        
+        @media (min-width: 992px) { .map-container { height: calc(100vh - 60px - 4rem); } }
+        #map { width: 100%; height: 100%; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+
+        /* --- 7. Placeholder Pages --- */
+        .feature-page { flex-direction: column; justify-content: center; align-items: center; text-align: center; color: var(--white); padding: 2rem; }
+        #my-trips { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1522441815192-d9f04eb0615c?q=80&w=2070') no-repeat center center/cover; }
+        #profile { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2070') no-repeat center center/cover; }
+        #booking-hub { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1562941926-155c065fb2ba?q=80&w=1974') no-repeat center center/cover; }
+        #co-pilot { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1506503355416-3e449495b355?q=80&w=2070') no-repeat center center/cover; }
+        #gamification { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1533106418989-88406e768257?q=80&w=2070') no-repeat center center/cover; }
+        #ar-integration { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1617994392158-0d127c5b6c2d?q=80&w=1964') no-repeat center center/cover; }
+        #cultural-insights { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1524230659103-e69953255a?q=80&w=2070') no-repeat center center/cover; }
+        #photo-hotspots { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1502602898657-3e91760c0341?q=80&w=2070') no-repeat center center/cover; }
+        #find-nearby { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1549877452-9c3e87a421DB?q=80&w=2070') no-repeat center center/cover; }
+        
+        .feature-page-content { max-width: 800px; }
+        .feature-page-content p { font-size: 1.2rem; margin-bottom: 2rem; }
+        .feature-page-content .cta-button { margin-top: 1rem; }
+        
+        /* --- 8. Loading Spinner & Back Button --- */
+        .loader-container { text-align: center; padding: 2rem; }
+        .loader { border: 6px solid #f3f3f3; border-radius: 50%; border-top: 6px solid var(--primary-color); width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto; }
+        .back-button { background-color: #757575; margin-top: 1rem; display: block; width: 100%; }
+        .back-button:hover:not(:disabled) { background-color: #616161; transform: translateY(0); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+
+        /* --- 9. Chatbot --- */
+        #chat-toggle { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background-color: var(--primary-color); color: var(--white); border: none; border-radius: 50%; font-size: 1.8rem; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: flex; justify-content: center; align-items: center; z-index: 1000; transition: transform 0.3s ease; }
+        #chat-toggle:hover { transform: scale(1.1); }
+        #chat-container { position: fixed; bottom: 100px; right: 25px; width: 90%; max-width: 400px; height: 500px; background-color: var(--white); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; z-index: 999; transform: scale(0.5); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; transform-origin: bottom right; pointer-events: none; }
+        #chat-container.open { transform: scale(1); opacity: 1; pointer-events: auto; }
+        .chat-header { background-color: var(--primary-color); color: var(--white); padding: 1rem; font-weight: 600; text-align: center; }
+        .chat-messages { flex-grow: 1; padding: 1rem; overflow-y: auto; }
+        .message { margin-bottom: 1rem; display: flex; max-width: 85%; }
+        .message p { padding: 0.75rem 1rem; border-radius: 18px; line-height: 1.4; }
+        .user-message { margin-left: auto; flex-direction: row-reverse; }
+        .user-message p { background-color: var(--secondary-color); color: var(--white); border-bottom-right-radius: 4px; }
+        .bot-message p { background-color: #e0e0e0; color: var(--text-color); border-bottom-left-radius: 4px; }
+        .chat-input { display: flex; padding: 0.75rem; border-top: 1px solid var(--border-color); }
+        .chat-input input { flex-grow: 1; border: 1px solid var(--border-color); padding: 0.75rem; border-radius: 20px; margin-right: 0.5rem; }
+        .chat-input button { background-color: var(--secondary-color); color: var(--white); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; }
+
+        /* --- 10. NEW LIVE FEATURES --- */
+        .trip-tools { background: #fff; border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.07); }
+        .trip-tools h3 { text-align: center; margin-bottom: 1rem; color: var(--primary-color); }
+        .tool-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
+        .tool-btn { background-color: var(--secondary-color); color: var(--white); border: none; padding: 12px; border-radius: 8px; cursor: pointer; transition: background-color 0.3s ease; }
+        .tool-btn:hover:not(:disabled) { background-color: var(--primary-color); }
+        .tool-btn:disabled { background-color: #9e9e9e; cursor: not-allowed; }
+
+        .budget-summary {
+            background: #fff; border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            text-align: center;
+        }
+        .budget-summary h3 { color: var(--primary-color); margin-bottom: 0.5rem; }
+        .budget-summary p { font-size: 1.5rem; font-weight: 700; color: var(--text-color); }
+        .budget-summary button {
+            background: none; border: 1px solid var(--secondary-color); color: var(--secondary-color);
+            padding: 8px 16px; border-radius: 20px; cursor: pointer; margin-top: 1rem; transition: all 0.3s ease;
+        }
+        .budget-summary button:hover { background-color: var(--secondary-color); color: var(--white); }
+        .budget-breakdown { margin-top: 1rem; text-align: left; }
+        .budget-breakdown h4 { text-align: center; margin-bottom: 0.5rem; color: var(--secondary-color); }
+        .budget-breakdown ul { list-style: none; padding: 0; }
+        .budget-breakdown li { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
+
+        .tool-result-card {
+            background: var(--white); margin-bottom: 1rem; padding: 1rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex; align-items: center; gap: 1rem;
+        }
+        .tool-result-card .fa-solid { font-size: 1.5rem; color: var(--secondary-color); }
+        .tool-result-card h4 { margin-bottom: 0.25rem; }
+
+        #photo-hotspots-results {
+            background: #e3f2fd; /* Light blue background */
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border: 1px solid var(--secondary-color);
+        }
+        #photo-hotspots-results h3 {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        /* Modal Styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: none; justify-content: center; align-items: center; animation: fadeIn 0.3s; }
+        .modal-content { background: var(--white); padding: 2rem; border-radius: 12px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative; }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+        
+        #promptInput { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 1rem; margin-top: 1rem; }
+
+        /* API Key Alert */
+        #api-key-alert {
+            display: none; position: sticky; top: 60px; background-color: var(--error-color); color: var(--white);
+            padding: 1rem; text-align: center; z-index: 1000;
+        }
+        
+        /* --- Animations --- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- ======================= -->
+    <!--  API KEY ALERT          -->
+    <!-- ======================= -->
+    <div id="api-key-alert">
+        <strong>Action Required:</strong> API keys are missing. Please configure them to enable all features.
+    </div>
+
+    <!-- ======================= -->
+    <!--  1. NAVIGATION BAR      -->
+    <!-- ======================= -->
+    <nav class="navbar">
+        <a href="#" data-section="hero" class="nav-logo"><i class="fa-solid fa-plane-departure"></i> ExploreMate</a>
+        <ul class="nav-links">
+            <li><a data-section="hero">Home</a></li>
+            <li><a data-section="planner">Planner</a></li>
+            <li><a data-section="my-trips">My Trips</a></li>
+            <li class="dropdown">
+                <a href="#">More <i class="fa-solid fa-caret-down"></i></a>
+                <div class="dropdown-content">
+                    <a data-section="cultural-insights"><i class="fa-solid fa-book-atlas"></i> Cultural Insights</a>
+                    <a data-section="photo-hotspots"><i class="fa-solid fa-camera-retro"></i> Photo Hotspots</a>
+                    <a data-section="find-nearby"><i class="fa-solid fa-magnifying-glass-location"></i> Find Nearby</a>
+                    <hr>
+                    <a data-section="booking-hub">Booking Hub</a>
+                    <a data-section="gamification">Gamification</a>
+                    <a data-section="co-pilot">Co-Pilot</a>
+                    <a data-section="ar-integration">AR Features</a>
+                    <a data-section="profile">Profile</a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+
+    <!-- ======================= -->
+    <!--  SECTIONS (HERO, PLANNER) -->
+    <!-- ======================= -->
+    <section id="hero" class="page-section active">
+        <h1>Your AI-Powered Travel Companion</h1>
+        <p class="travel-quote" id="travelQuote"></p>
+        <button id="startPlanningBtn" class="cta-button">Start Planning Your Trip <i class="fa-solid fa-arrow-right"></i></button>
+    </section>
+
+    <section id="planner" class="page-section">
+        <div class="planner-container">
+            <h2>Plan Your Perfect Adventure <i class="fa-solid fa-map-marked-alt" style="color: var(--primary-color);"></i></h2>
+            <form id="tripForm">
+                <div class="form-group">
+                    <label for="destination">Destination</label>
+                    <input type="text" id="destination" placeholder="e.g., Kyoto, Japan" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="country">Your Home Country</label>
+                        <select id="country"><!-- Options will be populated by JS --></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="budget">Budget</label>
+                        <select id="budget">
+                            <option value="Budget-Friendly">Budget-Friendly</option>
+                            <option value="Mid-Range" selected>Mid-Range</option>
+                            <option value="Luxury">Luxury</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="days">Number of Days</label>
+                    <input type="number" id="days" placeholder="e.g., 5" min="1" max="14" required>
+                </div>
+                <div class="form-group">
+                    <label for="interests">Interests (comma separated)</label>
+                    <input type="text" id="interests" placeholder="e.g., history, food, nature, temples">
+                </div>
+                <button type="submit" id="generate-btn" class="cta-button">Generate Itinerary <i class="fa-solid fa-paper-plane"></i></button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ======================= -->
+    <!--  RESULTS PAGE & LIVE TOOLS -->
+    <!-- ======================= -->
+    <section id="results" class="page-section">
+        <div id="results-container">
+            <div id="itinerary-content">
+                <h2 id="itinerary-title">Your Custom Itinerary</h2>
+                <div id="budget-summary-container"></div>
+                <div id="itinerary-output"></div>
+                <div class="trip-tools">
+                    <h3>Trip Tools</h3>
+                    <div class="tool-buttons">
+                        <button id="culturalTipsBtn" class="tool-btn"><i class="fa-solid fa-book-atlas"></i> Cultural Insights</button>
+                        <button id="photoSpotsBtn" class="tool-btn"><i class="fa-solid fa-camera-retro"></i> Photo Hotspots</button>
+                        <button id="nearbySearchBtn" class="tool-btn"><i class="fa-solid fa-magnifying-glass-location"></i> Find Nearby</button>
+                    </div>
+                </div>
+                <button id="backToPlannerBtn" class="cta-button back-button"><i class="fa-solid fa-arrow-left"></i> Plan Another Trip</button>
+            </div>
+            <div class="map-container"> <div id="map"></div> </div>
+        </div>
+    </section>
+
+    <!-- ======================= -->
+    <!--  PLACEHOLDER PAGES      -->
+    <!-- ======================= -->
+    <section id="my-trips" class="page-section feature-page">
+        <div class="feature-page-content">
+            <h1><i class="fa-solid fa-suitcase-rolling"></i> My Trips & Wallet</h1>
+            <p>This is where all your saved itineraries, booking confirmations, and travel documents will live. This feature is coming soon!</p>
+            <p class="travel-quote">"Once a year, go someplace you've never been before." – Dalai Lama</p>
+        </div>
+    </section>
+    <section id="profile" class="page-section feature-page">
+        <div class="feature-page-content">
+            <h1><i class="fa-solid fa-user-circle"></i> Your Profile</h1>
+            <p>Personalize your travel preferences, manage your details, and track your travel stats. This feature is coming soon!</p>
+            <p class="travel-quote">"To travel is to discover that everyone is wrong about other countries." - Aldous Huxley</p>
+        </div>
+    </section>
+    <section id="booking-hub" class="page-section feature-page">
+        <div class="feature-page-content">
+            <h1><i class="fa-solid fa-cash-register"></i> Booking Hub</h1>
+            <p>Seamlessly handle flight, hotel, and activity bookings. This feature is coming soon!</p>
+            <p class="travel-quote">"Investment in travel is an investment in yourself." - Matthew Karsten</p>
+        </div>
+    </section>
+    <section id="co-pilot" class="page-section feature-page">
+        <div class="feature-page-content">
+            <h1><i class="fa-solid fa-robot"></i> In-Trip Co-Pilot</h1>
+            <p>Real-time updates, dynamic route optimization, and proactive suggestions during your journey. This feature is coming soon!</p>
+            <p class="travel-quote">"Stop worrying about the potholes in the road and enjoy the journey." - Babs Hoffman</p>
+        </div>
+    </section>
+    <section id="gamification" class="page-section feature-page">
+        <div class="feature-page-content">
+            <h1><i class="fa-solid fa-trophy"></i> Explore & Earn!</h1>
+            <p>Complete discovery challenges, earn points and badges, and compete on leaderboards. This feature is coming soon!</p>
+            <p class="travel-quote">"Life is either a daring adventure or nothing at all." - Helen Keller</p>
+        </div>
+    </section>
+    <section id="ar-integration" class="page-section feature-page">
+        <div class="feature-page-content">
+            <h1><i class="fa-solid fa-vr-cardboard"></i> Augmented Reality</h1>
+            <p>AR Navigation, interactive landmarks, and "try before you buy" experiences. This feature is coming soon!</p>
+            <p class="travel-quote">"The future is already here – it's just not evenly distributed." - William Gibson</p>
+        </div>
+    </section>
+    <section id="cultural-insights" class="page-section feature-page">
+        <div class="feature-page-content">
+            <h1><i class="fa-solid fa-book-atlas"></i> Cultural Insights</h1>
+            <p>Discover essential tips on local etiquette, customs, and common phrases for your destination. This feature uses AI to give you the insights you need to travel like a local.</p>
+            <button class="cta-button" id="launchCulturalInsights">Launch Tool</button>
+        </div>
+    </section>
+    <section id="photo-hotspots" class="page-section feature-page">
+        <div class="feature-page-content">
+            <h1><i class="fa-solid fa-camera-retro"></i> Photo Hotspots</h1>
+            <p>Find the most photogenic locations at your destination. This feature uses AI to suggest stunning viewpoints and photo opportunities, plotted directly on your map.</p>
+            <button class="cta-button" id="launchPhotoHotspots">Launch Tool</button>
+        </div>
+    </section>
+    <section id="find-nearby" class="page-section feature-page">
+        <div class="feature-page-content">
+            <h1><i class="fa-solid fa-magnifying-glass-location"></i> Find Nearby</h1>
+            <p>Explore your surroundings with ease. This tool can use your live location to help you find restaurants, museums, cafes, and more on the map.</p>
+            <button class="cta-button" id="launchFindNearby">Find Places Near Me</button>
+        </div>
+    </section>
+
+    <!-- ======================= -->
+    <!-- MODALS & CHATBOT        -->
+    <!-- ======================= -->
+    <div id="infoModal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="infoModalCloseBtn" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+            <h2 id="infoModalTitle"></h2>
+            <div id="infoModalBody"></div>
+        </div>
+    </div>
+    
+    <div id="promptModal" class="modal-overlay">
+        <div class="modal-content">
+             <button id="promptModalCloseBtn" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+            <h2 id="promptModalTitle"></h2>
+            <div id="promptModalBody">
+                 <input type="text" id="promptInput" placeholder="Enter value here...">
+            </div>
+            <button id="promptModalSubmitBtn" class="cta-button" style="width:100%; margin-top:1rem;">Submit</button>
+        </div>
+    </div>
+
+    <button id="chat-toggle"><i class="fa-solid fa-comment-dots"></i></button>
+    <div id="chat-container"></div>
+
+    <!-- ======================= -->
+    <!-- JAVASCRIPT LOGIC        -->
+    <!-- ======================= -->
+    <script>
+        // --- 0. API KEYS ---
+        const GEMINI_API_KEY = 'AIzaSyDgJcitf1zsPBOa3ByWhRDDAm9zEZhr_iI';
+        const MAPS_API_KEY = 'AIzaSyAmos8Xoew6VMbZjC_0ZNjglaGi5LYjW5o';
+
+        // --- 1. DOM Element References ---
+        const allNavLinks = document.querySelectorAll('a[data-section]');
+        const sections = document.querySelectorAll('.page-section');
+        const startPlanningBtn = document.getElementById('startPlanningBtn');
+        const tripForm = document.getElementById('tripForm');
+        const backToPlannerBtn = document.getElementById('backToPlannerBtn');
+        const quoteElement = document.getElementById('travelQuote');
+        const itineraryOutput = document.getElementById('itinerary-output');
+        const itineraryTitle = document.getElementById('itinerary-title');
+        const budgetSummaryContainer = document.getElementById('budget-summary-container');
+        const countrySelect = document.getElementById('country');
+        const budgetSelect = document.getElementById('budget');
+        
+        const culturalTipsBtn = document.getElementById('culturalTipsBtn');
+        const photoSpotsBtn = document.getElementById('photoSpotsBtn');
+        const nearbySearchBtn = document.getElementById('nearbySearchBtn');
+        
+        const launchCulturalInsightsBtn = document.getElementById('launchCulturalInsights');
+        const launchPhotoHotspotsBtn = document.getElementById('launchPhotoHotspots');
+        const launchFindNearbyBtn = document.getElementById('launchFindNearby');
+
+        // Modals
+        const infoModal = document.getElementById('infoModal');
+        const infoModalCloseBtn = document.getElementById('infoModalCloseBtn');
+        const infoModalTitle = document.getElementById('infoModalTitle');
+        const infoModalBody = document.getElementById('infoModalBody');
+        const promptModal = document.getElementById('promptModal');
+        const promptModalCloseBtn = document.getElementById('promptModalCloseBtn');
+        const promptModalTitle = document.getElementById('promptModalTitle');
+        const promptModalBody = document.getElementById('promptModalBody');
+        const promptInput = document.getElementById('promptInput');
+        const promptModalSubmitBtn = document.getElementById('promptModalSubmitBtn');
+
+        // Chatbot
+        const chatContainer = document.getElementById('chat-container');
+        chatContainer.innerHTML = `<div class="chat-header">AI Travel Assistant</div><div class="chat-messages" id="chat-messages"><div class="message bot-message"><p>Hello! How can I help you plan your travels today?</p></div></div><form class="chat-input" id="chat-form"><input type="text" id="chat-input-text" placeholder="Ask about destinations..." required><button type="submit"><i class="fa-solid fa-paper-plane"></i></button></form>`;
+        const chatToggle = document.getElementById('chat-toggle');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input-text');
+        const chatMessages = document.getElementById('chat-messages');
+
+        let map;
+        let placesService;
+        let markers = [];
+        let tempMarkers = [];
+        let currentItineraryQuery = {};
+        let currentPromptCallback = null;
+
+        // --- 2. Country & Currency Data ---
+        const countries = { "India": "₹", "United States": "$", "United Kingdom": "£", "Japan": "¥", "Germany": "€", "Australia": "$", "Canada": "$", "Brazil": "R$" };
+
+        // --- 3. UI & Page Navigation Logic ---
+        function showSection(sectionId) {
+            sections.forEach(section => section.classList.remove('active'));
+            const activeSection = document.getElementById(sectionId);
+            if (activeSection) activeSection.classList.add('active');
+            window.scrollTo(0, 0); // Scroll to top on page change
+        }
+        
+        allNavLinks.forEach(link => {
+            link.addEventListener('click', (e) => { e.preventDefault(); showSection(link.dataset.section); });
+        });
+
+        startPlanningBtn.addEventListener('click', () => showSection('planner'));
+        backToPlannerBtn.addEventListener('click', () => { currentItineraryQuery = {}; showSection('planner'); });
+
+        // --- 4. Dynamic Content & Form Setup ---
+        const quotes = [
+            "The world is a book and those who do not travel read only one page. – St. Augustine",
+            "Not all those who wander are lost. – J.R.R. Tolkien",
+            "Life is either a daring adventure or nothing at all. – Helen Keller",
+            "Travel is fatal to prejudice, bigotry, and narrow-mindedness. – Mark Twain",
+            "To travel is to live. – Hans Christian Andersen"
+        ];
+        function updateQuote() {
+            quoteElement.style.opacity = 0;
+            setTimeout(() => {
+                quoteElement.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+                quoteElement.style.opacity = 1;
+            }, 500);
+        }
+        function populateCountries() {
+            for (const country in countries) {
+                const option = document.createElement('option');
+                option.value = country;
+                option.textContent = country;
+                countrySelect.appendChild(option);
+            }
+            countrySelect.value = "India";
+        }
+        function updateBudgetCurrency() {
+            const selectedCountry = countrySelect.value;
+            const currencySymbol = countries[selectedCountry] || '$';
+            budgetSelect.options[0].textContent = `Budget-Friendly (${currencySymbol})`;
+            budgetSelect.options[1].textContent = `Mid-Range (${currencySymbol.repeat(2)})`;
+            budgetSelect.options[2].textContent = `Luxury (${currencySymbol.repeat(3)})`;
+        }
+        
+        // --- 5. Modal Logic ---
+        function showAlert(title, message) {
+            infoModalTitle.textContent = title;
+            infoModalBody.innerHTML = message;
+            infoModal.style.display = 'flex';
+        }
+        
+        function showPrompt(title, placeholder, callback) {
+            promptModalTitle.textContent = title;
+            promptInput.placeholder = placeholder || "Enter value...";
+            promptInput.value = '';
+            promptModal.style.display = 'flex';
+            currentPromptCallback = callback;
+        }
+
+        infoModalCloseBtn.addEventListener('click', () => infoModal.style.display = 'none');
+        promptModalCloseBtn.addEventListener('click', () => promptModal.style.display = 'none');
+        promptModalSubmitBtn.addEventListener('click', () => {
+            if (currentPromptCallback && promptInput.value) {
+                currentPromptCallback(promptInput.value);
+            }
+            promptModal.style.display = 'none';
+        });
+
+
+        // --- 6. Google Maps API Integration ---
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), { zoom: 2, center: { lat: 20, lng: 0 }, mapTypeControl: false, streetViewControl: false, });
+            placesService = new google.maps.places.PlacesService(map);
+        }
+        
+        function clearAllMarkers() {
+            [...markers, ...tempMarkers].forEach(marker => marker.setMap(null));
+            markers = []; tempMarkers = [];
+        }
+        
+        function addMarker(location, title, icon = null, isTemp = false) {
+            const marker = new google.maps.Marker({ position: location, map, title, icon, animation: google.maps.Animation.DROP });
+            if (isTemp) { tempMarkers.push(marker); } else { markers.push(marker); }
+            return marker;
+        }
+        
+        // --- 7. Gemini API Call Helper ---
+        async function callGeminiAPI(prompt, isJsonResponse = false) {
+             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+             const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                ...(isJsonResponse && {
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                    }
+                })
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.json();
+                console.error("API Error Response:", errorBody);
+                throw new Error(`API Error: ${response.status} - ${errorBody.error?.message || 'Unknown error'}`);
+            }
+            
+            const data = await response.json();
+            if (!data.candidates || !data.candidates[0].content.parts[0]) {
+                throw new Error("Invalid response structure from API.");
+            }
+            
+            const rawText = data.candidates[0].content.parts[0].text;
+            return isJsonResponse ? JSON.parse(rawText) : rawText;
+        }
+
+
+        // --- 8. Itinerary Generation ---
+        tripForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            currentItineraryQuery = {
+                destination: document.getElementById('destination').value,
+                days: document.getElementById('days').value,
+                budget: document.getElementById('budget').value,
+                interests: document.getElementById('interests').value,
+                homeCountry: countrySelect.value
+            };
+            generateItinerary(currentItineraryQuery);
+        });
+        
+        async function generateItinerary(params) {
+            showSection('results');
+            itineraryOutput.innerHTML = '<div class="loader-container"><div class="loader"></div><p>Crafting your adventure...</p></div>';
+            budgetSummaryContainer.innerHTML = '';
+            itineraryTitle.textContent = `Generating your trip to ${params.destination}...`;
+            clearAllMarkers();
+
+            const prompt = `Create a detailed, day-by-day travel itinerary for a trip to ${params.destination} for ${params.days} days. The traveler's budget is ${params.budget}. Their interests include: ${params.interests}. For each activity, provide a name, a short description, an appropriate Font Awesome icon name (e.g., 'fa-landmark'), a precise location (latitude and longitude), and an estimatedCost as a number in the local currency (e.g., 20 for $20, 1500 for ¥1500). If an activity is free, the cost should be 0. Additionally, provide an estimated budget breakdown for the entire trip, including "accommodation", "transport", "food", and "activities" as keys, with costs as numbers. IMPORTANT: Respond ONLY with a valid JSON object. The JSON structure should be: {"tripTitle": "...", "localCurrencySymbol": "...", "estimatedBudget": {"accommodation": 0, "transport": 0, "food": 0, "activities": 0}, "itinerary": [{"day": 1, "title": "...", "summary": "...", "activities": [{"name": "...", "description": "...", "icon": "...", "location": {"lat": 0.0, "lng": 0.0}, "estimatedCost": 0}]}]}`;
+            
+            try {
+                const itineraryData = await callGeminiAPI(prompt, true);
+                displayItinerary(itineraryData);
+            } catch (error) {
+                console.error('Error generating itinerary:', error);
+                itineraryOutput.innerHTML = `<p style="color: var(--error-color); text-align: center;">Sorry, something went wrong. <br><small>${error.message}</small></p>`;
+            }
+        }
+        
+        function displayItinerary(data) {
+            itineraryTitle.textContent = data.tripTitle;
+            itineraryOutput.innerHTML = '';
+            clearAllMarkers();
+            
+            // Clear any previous tool results
+            const existingToolResults = document.getElementById('photo-hotspots-results');
+            if (existingToolResults) existingToolResults.remove();
+
+            let totalCost = 0;
+            // --- FIX START: Calculate total cost from budget breakdown for accuracy ---
+            if (data.estimatedBudget && typeof data.estimatedBudget === 'object') {
+                 totalCost = Object.values(data.estimatedBudget).reduce((sum, value) => sum + (parseFloat(value) || 0), 0);
+            } else {
+                // Fallback if estimatedBudget is not provided or is in an unexpected format
+                data.itinerary.forEach(day => {
+                    day.activities.forEach(activity => {
+                        totalCost += parseFloat(activity.estimatedCost || 0);
+                    });
+                });
+            }
+            // --- FIX END ---
+            const bounds = new google.maps.LatLngBounds();
+            
+            data.itinerary.forEach(day => {
+                let dayHtml = `<div class="day-plan"><h3>Day ${day.day}: ${day.title}</h3><p><em>${day.summary}</em></p>`;
+                day.activities.forEach(activity => {
+                    dayHtml += `<div class="activity"><i class="fa-solid ${activity.icon || 'fa-location-dot'} activity-icon"></i><div><strong>${activity.name}</strong><p>${activity.description}</p></div></div>`;
+                    if (activity.location?.lat && activity.location?.lng) {
+                        const position = { lat: activity.location.lat, lng: activity.location.lng };
+                        addMarker(position, activity.name);
+                        bounds.extend(position);
+                    }
+                });
+                dayHtml += `</div>`;
+                itineraryOutput.innerHTML += dayHtml;
+            });
+            
+            let budgetBreakdownHtml = '';
+            if (data.estimatedBudget) {
+                budgetBreakdownHtml = `
+                    <div class="budget-breakdown">
+                        <h4>Budget Breakdown</h4>
+                        <ul>
+                            <li><strong>Stays:</strong> <span>${data.localCurrencySymbol || '$'}${data.estimatedBudget.accommodation?.toLocaleString() || 'N/A'}</span></li>
+                            <li><strong>Travel:</strong> <span>${data.localCurrencySymbol || '$'}${data.estimatedBudget.transport?.toLocaleString() || 'N/A'}</span></li>
+                            <li><strong>Food:</strong> <span>${data.localCurrencySymbol || '$'}${data.estimatedBudget.food?.toLocaleString() || 'N/A'}</span></li>
+                            <li><strong>Activities:</strong> <span>${data.localCurrencySymbol || '$'}${data.estimatedBudget.activities?.toLocaleString() || 'N/A'}</span></li>
+                        </ul>
+                    </div>
+                `;
+            }
+
+            budgetSummaryContainer.innerHTML = `
+                <div class="budget-summary">
+                    <h3>Estimated Trip Cost</h3>
+                    <p>${data.localCurrencySymbol || '$'}${totalCost.toLocaleString()}</p>
+                    ${budgetBreakdownHtml}
+                    <button id="editBudgetBtn">Edit Budget & Redesign</button>
+                </div>`;
+            document.getElementById('editBudgetBtn').addEventListener('click', handleBudgetEdit);
+
+            if (markers.length > 0) { map.fitBounds(bounds); }
+        }
+
+        function handleBudgetEdit() {
+            showPrompt("Change Budget", "e.g., Budget-Friendly, Mid-Range, Luxury", (newBudget) => {
+                 if (newBudget && ['budget-friendly', 'mid-range', 'luxury'].includes(newBudget.toLowerCase().replace(' ', '-'))) {
+                    currentItineraryQuery.budget = newBudget;
+                    generateItinerary(currentItineraryQuery);
+                } else if (newBudget) {
+                    showAlert("Invalid Input", "Please enter 'Budget-Friendly', 'Mid-Range', or 'Luxury'.");
+                }
+            });
+        }
+
+        // --- 9. DUAL-MODE LIVE FEATURES LOGIC ---
+        async function showCulturalInsightsModal(destination) {
+            infoModalTitle.textContent = `Cultural Insights for ${destination}`;
+            infoModalBody.innerHTML = '<div class="loader-container"><div class="loader"></div></div>';
+            infoModal.style.display = 'flex';
+            const prompt = `Provide a short list of key cultural tips, local etiquette, and common phrases for a tourist visiting ${destination}. Format the response in simple HTML with h4 for titles and ul/li for lists.`;
+            try {
+                infoModalBody.innerHTML = await callGeminiAPI(prompt, false);
+            } catch (error) { infoModalBody.innerHTML = 'Sorry, could not fetch tips.'; }
+        }
+
+        async function addPhotoHotspotsToMap(destination) {
+            photoSpotsBtn.disabled = true;
+            photoSpotsBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Finding...';
+            
+            // Clear previous temp markers and results
+            tempMarkers.forEach(marker => marker.setMap(null));
+            tempMarkers = [];
+            const existingResults = document.getElementById('photo-hotspots-results');
+            if (existingResults) existingResults.remove();
+                    
+            const prompt = `Suggest 5 famous and iconic photo hotspots or viewpoints in ${destination}, known for great photography opportunities. For each spot, provide a name, a short description of the photo opportunity, and its precise latitude and longitude. IMPORTANT: Respond ONLY with a valid JSON object like {"spots": [{"name": "...", "description": "...", "location": {"lat": 0.0, "lng": 0.0}}]}.`;
+            
+            try {
+                const photoData = await callGeminiAPI(prompt, true);
+                const bounds = new google.maps.LatLngBounds();
+                markers.forEach(marker => bounds.extend(marker.getPosition())); // Include existing itinerary markers
+
+                const resultsContainer = document.createElement('div');
+                resultsContainer.id = 'photo-hotspots-results';
+                resultsContainer.innerHTML = '<h3><i class="fa-solid fa-camera-retro"></i> Photo Hotspots</h3>';
+
+                photoData.spots.forEach(spot => {
+                    const position = { lat: spot.location.lat, lng: spot.location.lng };
+                    addMarker(position, spot.name, { url: 'https://maps.google.com/mapfiles/ms/icons/camera.png', scaledSize: new google.maps.Size(40, 40) }, true);
+                    bounds.extend(position);
+                    
+                    const resultCard = document.createElement('div');
+                    resultCard.className = 'tool-result-card';
+                    resultCard.innerHTML = `<i class="fa-solid fa-camera"></i><div><h4>${spot.name}</h4><p>${spot.description}</p></div>`;
+                    resultsContainer.appendChild(resultCard);
+                });
+                
+                // Append results after the trip tools
+                document.querySelector('.trip-tools').insertAdjacentElement('afterend', resultsContainer);
+                
+                map.fitBounds(bounds);
+            } catch (error) {
+                console.error("Could not fetch photo spots:", error);
+                showAlert('Error', 'Sorry, could not find photo spots for this location.');
+            } finally {
+                photoSpotsBtn.disabled = false;
+                photoSpotsBtn.innerHTML = '<i class="fa-solid fa-camera-retro"></i> Photo Hotspots';
+            }
+        }
+
+        function addNearbyPlacesToMap(location, placeType) {
+            nearbySearchBtn.disabled = true;
+            nearbySearchBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Searching...';
+            const request = { location, radius: '2000', keyword: placeType };
+            
+            placesService.nearbySearch(request, (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                    const bounds = new google.maps.LatLngBounds();
+                    markers.forEach(marker => bounds.extend(marker.getPosition())); 
+                    results.forEach(place => {
+                        if (place.geometry?.location) {
+                            const position = place.geometry.location;
+                            addMarker(position, place.name, { url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', scaledSize: new google.maps.Size(40, 40) }, true);
+                            bounds.extend(position);
+                        }
+                    });
+                    map.fitBounds(bounds);
+                } else { 
+                    showAlert('Not Found', `Sorry, could not find any '${placeType}' nearby.`);
+                }
+                nearbySearchBtn.disabled = false;
+                nearbySearchBtn.innerHTML = '<i class="fa-solid fa-magnifying-glass-location"></i> Find Nearby';
+            });
+        }
+        
+        async function showPhotoHotspotsOnMap(destination) {
+            showSection('results');
+            budgetSummaryContainer.innerHTML = '';
+            itineraryOutput.innerHTML = '<div class="loader-container"><div class="loader"></div><p>Finding best photo spots...</p></div>';
+            itineraryTitle.textContent = `Photo Hotspots in ${destination}`;
+            clearAllMarkers();
+            const prompt = `Suggest 5 famous and iconic photo hotspots or viewpoints in ${destination}, known for great photography opportunities. For each spot, provide a name, a short description of the photo opportunity, and its precise latitude and longitude. IMPORTANT: Respond ONLY with a valid JSON object like {"spots": [{"name": "...", "description": "...", "location": {"lat": 0.0, "lng": 0.0}}]}.`;
+            try {
+                const photoData = await callGeminiAPI(prompt, true);
+                itineraryOutput.innerHTML = '';
+                const bounds = new google.maps.LatLngBounds();
+                photoData.spots.forEach(spot => {
+                    const position = { lat: spot.location.lat, lng: spot.location.lng };
+                    addMarker(position, spot.name, { url: 'https://maps.google.com/mapfiles/ms/icons/camera.png', scaledSize: new google.maps.Size(40, 40) }, true);
+                    bounds.extend(position);
+                    itineraryOutput.innerHTML += `<div class="tool-result-card"><i class="fa-solid fa-camera"></i><div><h4>${spot.name}</h4><p>${spot.description}</p></div></div>`;
+                });
+                if (tempMarkers.length > 0) map.fitBounds(bounds);
+            } catch (error) {
+                itineraryOutput.innerHTML = '<p>Sorry, could not find photo spots for this location.</p>';
+            }
+        }
+
+        function showNearbyPlacesOnMap(location, placeType, isLiveLocation = false) {
+            showSection('results');
+            budgetSummaryContainer.innerHTML = '';
+            itineraryOutput.innerHTML = '<div class="loader-container"><div class="loader"></div><p>Searching for nearby places...</p></div>';
+            itineraryTitle.textContent = isLiveLocation ? `Finding '${placeType}' Near You` : `Finding '${placeType}' Nearby`;
+            clearAllMarkers();
+            
+            if (isLiveLocation) { map.setCenter(location); map.setZoom(14); }
+            const request = { location, radius: '2000', keyword: placeType };
+            
+            placesService.nearbySearch(request, (results, status) => {
+                itineraryOutput.innerHTML = ''; 
+                if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                    const bounds = new google.maps.LatLngBounds();
+                    results.forEach(place => {
+                        if (place.geometry?.location) {
+                            const position = place.geometry.location;
+                            addMarker(position, place.name, { url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', scaledSize: new google.maps.Size(40, 40) }, true);
+                            bounds.extend(position);
+                            itineraryOutput.innerHTML += `<div class="tool-result-card"><i class="fa-solid fa-map-pin"></i><div><h4>${place.name}</h4><p>${place.vicinity || 'No address available.'}</p></div></div>`;
+                        }
+                    });
+                    if (tempMarkers.length > 0) map.fitBounds(bounds);
+                } else { 
+                    itineraryOutput.innerHTML = `<p>Sorry, could not find any '${placeType}' nearby.</p>`;
+                }
+            });
+        }
+        
+        // --- 10. Event Listeners ---
+        culturalTipsBtn.addEventListener('click', () => showCulturalInsightsModal(currentItineraryQuery.destination));
+        photoSpotsBtn.addEventListener('click', () => addPhotoHotspotsToMap(currentItineraryQuery.destination));
+        nearbySearchBtn.addEventListener('click', () => {
+             showPrompt(`Find Nearby in ${currentItineraryQuery.destination}`, "e.g., restaurant, cafe", (placeType) => {
+                 if (placeType) addNearbyPlacesToMap(map.getCenter(), placeType);
+             });
+        });
+
+        launchCulturalInsightsBtn.addEventListener('click', () => {
+             showPrompt("Cultural Insights", "Enter a destination", (destination) => {
+                 if (destination) showCulturalInsightsModal(destination);
+             });
+        });
+        launchPhotoHotspotsBtn.addEventListener('click', () => {
+            showPrompt("Photo Hotspots", "Enter a destination", (destination) => {
+                if (destination) showPhotoHotspotsOnMap(destination);
+            });
+        });
+        launchFindNearbyBtn.addEventListener('click', () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
+                    showPrompt("Find Near You", "e.g., restaurant, cafe", (placeType) => {
+                        if (placeType) showNearbyPlacesOnMap(userLocation, placeType, true);
+                    });
+                }, () => showAlert('Location Error', 'Could not get your location. Please enable location services.'));
+            } else { showAlert('Unsupported', 'Geolocation is not supported by your browser.'); }
+        });
+
+        // --- 11. Chatbot Logic ---
+        chatToggle.addEventListener('click', () => {
+            chatContainer.classList.toggle('open');
+        });
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userInput = chatInput.value.trim();
+            if (!userInput) return;
+            
+            addMessage(userInput, 'user');
+            chatInput.value = '';
+            
+            const loadingMessageId = addMessage('<div class="loader-container" style="padding:0;"><div class="loader" style="width:25px; height:25px; border-width:3px;"></div></div>', 'bot', true);
+
+            try {
+                const prompt = `You are a helpful travel assistant. A user is asking: "${userInput}". Provide a concise and helpful response.`;
+                const botResponse = await callGeminiAPI(prompt, false);
+                updateLastBotMessage(botResponse, loadingMessageId);
+            } catch (error) {
+                updateLastBotMessage("Sorry, I'm having trouble connecting right now.", loadingMessageId);
+            }
+        });
+
+        function addMessage(text, sender, isLoading = false) {
+            const messageId = `msg-${Date.now()}`;
+            const messageElement = document.createElement('div');
+            messageElement.id = messageId;
+            messageElement.className = `message ${sender}-message`;
+            messageElement.innerHTML = `<p>${text}</p>`;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return messageId;
+        }
+
+        function updateLastBotMessage(text, messageId) {
+            const messageElement = document.getElementById(messageId);
+            if (messageElement) {
+                messageElement.querySelector('p').innerHTML = text;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+        
+        // --- 12. Initializer ---
+        document.addEventListener('DOMContentLoaded', () => {
+            if (GEMINI_API_KEY === '' || MAPS_API_KEY === '') {
+                document.getElementById('api-key-alert').style.display = 'block';
+                document.querySelectorAll('.cta-button, .tool-btn').forEach(btn => btn.disabled = true);
+                const generateBtn = document.getElementById('generate-btn');
+                generateBtn.textContent = 'API Keys Required';
+                generateBtn.style.backgroundColor = '#9e9e9e';
+            }
+            updateQuote(); setInterval(updateQuote, 10000);
+            populateCountries(); updateBudgetCurrency();
+        });
+
+        countrySelect.addEventListener('change', updateBudgetCurrency);
+
+    </script>
+    
+    <!-- Script to load Google Maps API -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAmos8Xoew6VMbZjC_0ZNjglaGi5LYjW5o&callback=initMap&libraries=places"></script>
+
+</body>
+</html>
+
+
+
